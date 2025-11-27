@@ -42,8 +42,36 @@ pip install -r requirements.txt
 
 ### Running Tests
 
+You can run tests in multiple ways:
+
+#### Using Test Scripts (Recommended)
+
+**macOS/Linux:**
+```bash
+./run_tests.sh
+```
+
+**Windows:**
+```cmd
+run_tests.cmd
+```
+
+The test scripts will:
+- Run all tests with pytest
+- Generate coverage reports (HTML and terminal)
+- Display coverage metrics
+- Exit with appropriate status codes
+
+#### Using pytest Directly
+
 ```bash
 pytest tests/
+```
+
+#### With Coverage Report
+
+```bash
+pytest tests/ --cov=src --cov-report=html --cov-report=term-missing
 ```
 
 ### Code Quality

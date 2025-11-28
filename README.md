@@ -1,4 +1,4 @@
-# Chisel Image Processing Library - Skeletonizer
+# Chisel Image Processing Library
 
 A Python library for image processing with skeletonization capabilities.
 
@@ -13,7 +13,7 @@ A Python library for image processing with skeletonization capabilities.
 1. Clone the repository:
 ```bash
 git clone <repository-url>
-cd Chisel-Image-Processing-Library-Skeletonizer
+cd Chisel-Image-Processing-Library
 ```
 
 2. Create a virtual environment:

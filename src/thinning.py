@@ -48,7 +48,28 @@ class Thinning:
             thinningType=cv2.ximgproc.THINNING_ZHANGSUEN
         )
         
-        return skeletonized
+        return self._fatten_skeleton(skeletonized)
+    
+    def _fatten_skeleton(self, skeleton: np.ndarray) -> np.ndarray:
+        """Fatten the skeletonized image based on config.fattened_size_offset.
+        
+        Args:
+            skeleton: The skeletonized binary image
+        
+        Returns:
+            np.ndarray: The fattened skeleton image, or original if fattened_size_offset is 0
+        """
+        if self.config.fattened_size_offset == 0:
+            return skeleton
+        
+        # Create a kernel for dilation with size 1 + fattened_size_offset
+        kernel_size = 1 + self.config.fattened_size_offset
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (kernel_size, kernel_size))
+        
+        # Dilate the skeleton to fatten it
+        fattened = cv2.dilate(skeleton, kernel, iterations=1)
+        
+        return fattened
     
     def _skeletonize_png_bytes(self, png_bytes: bytes) -> np.ndarray:
 

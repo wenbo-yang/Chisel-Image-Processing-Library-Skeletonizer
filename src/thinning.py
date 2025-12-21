@@ -81,14 +81,6 @@ class Thinning:
         return fattened
     
     def _blur_border(self, image: np.ndarray) -> np.ndarray:
-        """Blur the border region of the image based on config.border_blur_size.
-        
-        Args:
-            image: The input binary image
-        
-        Returns:
-            np.ndarray: The image with blurred borders
-        """
         if self.config.border_blur_size <= 0:
             return image
                 

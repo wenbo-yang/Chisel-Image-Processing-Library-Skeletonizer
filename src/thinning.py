@@ -8,23 +8,16 @@ import cv2.ximgproc
 
 from .config import Config
 
-
 class Thinning:
     def __init__(self, config: Config) -> None:
         self.config = config
 
-    def skeletonize(
-        self,
-        image_input: Union[np.ndarray, List[bytes], str, Path],
-        is_background_white: bool = True
-    ) -> np.ndarray:
+    def skeletonize(self, image_input: Union[np.ndarray, List[bytes], str, Path], is_background_white: bool = True) -> np.ndarray:
         # Dispatch to appropriate method based on input type
         if isinstance(image_input, np.ndarray):
             return self._skeletonize_bitmap(image_input, is_background_white)
         elif isinstance(image_input, list):
-            return self._skeletonize_byte_array_2d(
-                image_input, is_background_white
-            )
+            return self._skeletonize_byte_array_2d(image_input, is_background_white)
         elif isinstance(image_input, (str, Path)):
             return self._skeletonize_file(image_input, is_background_white)
         else:

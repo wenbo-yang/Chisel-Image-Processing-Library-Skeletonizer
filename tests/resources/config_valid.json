@@ -1,0 +1,6 @@
+{
+    "hardware_accelerated": true,
+    "fattened_size_offset": 5,
+    "white_threshold": 150,
+    "border_blur_size": 10
+}

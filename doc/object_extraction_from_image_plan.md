@@ -51,16 +51,12 @@ class ImageBlur:
     def apply(self, image: np.ndarray) -> np.ndarray: ...
 ```
 
-Apply Gaussian blur to suppress noise before edge detection. The kernel size scales with
-the image dimensions so that blur strength is proportional regardless of resolution.
+Apply Gaussian blur to suppress noise before edge detection.
 
-**Kernel size formula:**
-```
-kernel_size = max(3, min(height, width) // 20) | 1   # forced odd
-```
-
-If `config.border_blur_size > 0`, that value overrides the adaptive formula (manual
-override).
+Current implementation: `ImageBlur` uses the configured `border_blur_size` directly as
+the kernel size (forced odd with `| 1`). `blur_kernel_min` and `blur_kernel_max` were
+added to `Config` as parameters but are not used by the `ImageBlur` implementation at
+the moment.
 
 `Extractor` stores the blurred result as `self._last_blurred: np.ndarray` after calling
 `ImageBlur.apply()`, keeping it in memory for downstream inspection or reuse.

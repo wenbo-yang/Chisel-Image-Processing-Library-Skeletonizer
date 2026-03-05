@@ -19,6 +19,10 @@ class Config:
         sobel_kernel_size: int = 3,
         dilation_size: int = 3,
         grouping_proximity: int = 10,
+        blur_kernel_min: int = 3,
+        blur_kernel_max: int = 20,
+        blur_dim_min: int = 80,
+        blur_dim_max: int = 1024,
     ) -> None:
         self.hardware_accelerated = hardware_accelerated
         self.fattened_size_offset = fattened_size_offset
@@ -29,6 +33,12 @@ class Config:
         self.sobel_kernel_size = sobel_kernel_size
         self.dilation_size = dilation_size
         self.grouping_proximity = grouping_proximity
+        # Minimum and maximum kernel sizes used by ImageBlur when adaptive sizing
+        self.blur_kernel_min = blur_kernel_min
+        self.blur_kernel_max = blur_kernel_max
+        # Dimension thresholds (pixels) for adaptive kernel interpolation
+        self.blur_dim_min = blur_dim_min
+        self.blur_dim_max = blur_dim_max
 
     @classmethod
     def from_json(cls, json_source):
@@ -97,6 +107,10 @@ class Config:
         sobel_kernel_size = data.get('sobel_kernel_size', 3)
         dilation_size = data.get('dilation_size', 3)
         grouping_proximity = data.get('grouping_proximity', 10)
+        blur_kernel_min = data.get('blur_kernel_min', 3)
+        blur_kernel_max = data.get('blur_kernel_max', 20)
+        blur_dim_min = data.get('blur_dim_min', 80)
+        blur_dim_max = data.get('blur_dim_max', 1024)
 
         return cls(
             hardware_accelerated=hardware_accelerated,
@@ -108,4 +122,8 @@ class Config:
             sobel_kernel_size=sobel_kernel_size,
             dilation_size=dilation_size,
             grouping_proximity=grouping_proximity,
+            blur_kernel_min=blur_kernel_min,
+            blur_kernel_max=blur_kernel_max,
+            blur_dim_min=blur_dim_min,
+            blur_dim_max=blur_dim_max,
         )

@@ -5,6 +5,7 @@ from pathlib import Path
 from dataclasses import dataclass
 from enum import Enum
 import numpy as np
+import cv2
 
 from .config import Config
 
@@ -13,7 +14,7 @@ class EdgeDetectionMethod(Enum):
     """Enum for edge detection methods."""
     CANNY = "canny"
     SOBEL = "sobel"
-
+    DEXI = "dexi"  # future — placeholder stub
 
 @dataclass
 class CannyData:
@@ -24,7 +25,6 @@ class CannyData:
 class SobelData:
     """Data class for Sobel edge detection parameters."""
     pass
-
 
 @dataclass
 class EdgeBoundedObject:
@@ -52,3 +52,38 @@ class EdgeDetector:
         if not isinstance(config, Config):
             raise TypeError(f"config must be a Config instance, got {type(config)}")
         self.config = config
+
+    def detect(self, image: np.ndarray) -> np.ndarray:
+        """Apply the configured edge detection algorithm to produce an edge map.
+
+        Args:
+            image: 2D greyscale numpy array (output of blur stage).
+
+        Returns:
+            np.ndarray: Binary edge map of the same spatial size.
+
+        Raises:
+            NotImplementedError: If edge_detection_method is 'dexi' (not yet implemented).
+            ValueError: If edge_detection_method is not a recognised value.
+        """
+        method = self.config.edge_detection_method
+
+        if method == EdgeDetectionMethod.CANNY.value:
+            low, high = self.config.canny_threshold
+            return cv2.Canny(image, low, high)
+
+        elif method == EdgeDetectionMethod.SOBEL.value:
+            ksize = self.config.sobel_kernel_size
+            sobel_x = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=ksize)
+            sobel_y = cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=ksize)
+            magnitude = np.sqrt(sobel_x ** 2 + sobel_y ** 2)
+            return np.clip(magnitude, 0, 255).astype(np.uint8)
+
+        elif method == EdgeDetectionMethod.DEXI.value:
+            raise NotImplementedError("DEXI edge detection is not yet implemented")
+
+        else:
+            raise ValueError(
+                f"Unsupported edge detection method: '{method}'. "
+                f"Expected one of: {[m.value for m in EdgeDetectionMethod]}"
+            )

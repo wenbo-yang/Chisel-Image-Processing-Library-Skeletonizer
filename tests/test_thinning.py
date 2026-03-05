@@ -9,33 +9,31 @@ from src.config import Config
 
 
 class TestThinningSkeletonize:
-    """Test suite for the Thinning.skeletonize method."""
+    # Test suite for the Thinning.skeletonize method.
 
     @pytest.fixture
     def thinning_instance(self):
-        """Create a Thinning instance with default configuration."""
+        # Create a Thinning instance with default configuration.
         config = Config(hardware_accelerated=False)
         return Thinning(config)
 
     @pytest.fixture
     def resources_dir(self):
-        """Get the path to the test resources directory."""
+        # Get the path to the test resources directory.
         return Path(__file__).parent / "resources"
 
     @pytest.fixture
     def temp_dir(self):
-        """Create and get the path to the temp directory."""
+        # Create and get the path to the temp directory.
         temp_path = Path(__file__).parent / "temp"
         temp_path.mkdir(exist_ok=True)
         return temp_path
 
     def test_skeletonize_silhouette_fat_man_running(self, thinning_instance, resources_dir, temp_dir):
-        """Test skeletonization of fat man running silhouette image.
-
-        Loads a PNG file and skeletonizes it. Asserts that the output
-        is not completely white (i.e., contains some black pixels).
-        Saves the output bitmap to the temp folder.
-        """
+        # Test skeletonization of fat man running silhouette image.
+        # Loads a PNG file and skeletonizes it. Asserts that the output
+        # is not completely white (i.e., contains some black pixels).
+        # Saves the output bitmap to the temp folder.
         image_path = resources_dir / "silhouette_fat_man_running.png"
 
         # Skeletonize the image
@@ -59,12 +57,10 @@ class TestThinningSkeletonize:
         assert output_path.exists(), "Output bitmap was not saved"
 
     def test_skeletonize_silhouette_man_running(self, thinning_instance, resources_dir, temp_dir):
-        """Test skeletonization of man running silhouette image.
-
-        Loads a PNG file and skeletonizes it. Asserts that the output
-        is not completely white (i.e., contains some black pixels).
-        Saves the output bitmap to the temp folder.
-        """
+        # Test skeletonization of man running silhouette image.
+        # Loads a PNG file and skeletonizes it. Asserts that the output
+        # is not completely white (i.e., contains some black pixels).
+        # Saves the output bitmap to the temp folder.
         image_path = resources_dir / "silhouette_man_running.png"
 
         # Skeletonize the image
@@ -88,13 +84,11 @@ class TestThinningSkeletonize:
         assert output_path.exists(), "Output bitmap was not saved"
 
     def test_skeletonize_2d_byte_array_colors(self, thinning_instance, resources_dir, temp_dir):
-        """Test skeletonization using 2D byte array with inverted colors.
-
-        Reads silhouette_man_running.png, converts it to a 2D byte array with
-        0 representing white and 255 representing black, then feeds it into
-        the skeletonize function. Asserts that the output is not all white.
-        Saves the output bitmap to the temp folder.
-        """
+        # Test skeletonization using 2D byte array with inverted colors.
+        # Reads silhouette_man_running.png, converts it to a 2D byte array with
+        # 0 representing white and 255 representing black, then feeds it into
+        # the skeletonize function. Asserts that the output is not all white.
+        # Saves the output bitmap to the temp folder.
         image_path = resources_dir / "silhouette_man_running.png"
 
         # Read the image in grayscale
@@ -125,13 +119,11 @@ class TestThinningSkeletonize:
         assert output_path.exists(), "Output bitmap was not saved"
 
     def test_skeletonize_inverted_colors(self, thinning_instance, resources_dir, temp_dir):
-        """Test skeletonization with inverted image colors.
-
-        Reads silhouette_man_running.png, inverts the colors (white background becomes black),
-        then skeletonizes with is_background_white=False. Asserts that the output
-        is not all white.
-        Saves the output bitmap to the temp folder.
-        """
+        # Test skeletonization with inverted image colors.
+        # Reads silhouette_man_running.png, inverts the colors (white background becomes black),
+        # then skeletonizes with is_background_white=False. Asserts that the output
+        # is not all white.
+        # Saves the output bitmap to the temp folder.
         image_path = resources_dir / "silhouette_man_running.png"
 
         # Read the image in grayscale
@@ -162,13 +154,11 @@ class TestThinningSkeletonize:
         assert output_path.exists(), "Output bitmap was not saved"
 
     def test_skeletonize_with_fattened_size_offset_3(self, resources_dir, temp_dir):
-        """Test skeletonization with fattened_size_offset set to 3.
-
-        Creates a Config with fattened_size_offset=3 to make the skeleton thicker.
-        Loads a PNG file and skeletonizes it. Asserts that the output
-        is not completely white (i.e., contains some black pixels).
-        Saves the output bitmap to the temp folder for visual inspection.
-        """
+        # Test skeletonization with fattened_size_offset set to 3.
+        # Creates a Config with fattened_size_offset=3 to make the skeleton thicker.
+        # Loads a PNG file and skeletonizes it. Asserts that the output
+        # is not completely white (i.e., contains some black pixels).
+        # Saves the output bitmap to the temp folder for visual inspection.
         # Create a Config with fattened_size_offset set to 3
         config = Config(hardware_accelerated=False, fattened_size_offset=3)
         thinning_fattened = Thinning(config)

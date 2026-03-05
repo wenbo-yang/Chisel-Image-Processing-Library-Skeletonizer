@@ -2,16 +2,33 @@
 
 import json
 from pathlib import Path
+from typing import List
 import urllib.request
 import urllib.error
 
 
 class Config:
-    def __init__(self, hardware_accelerated: bool = False, fattened_size_offset: int = 0, white_threshold: int = 200, border_blur_size: int = 20) -> None:
+    def __init__(
+        self,
+        hardware_accelerated: bool = False,
+        fattened_size_offset: int = 0,
+        white_threshold: int = 200,
+        border_blur_size: int = 20,
+        edge_detection_method: str = "canny",
+        canny_threshold: List[int] = None,
+        sobel_kernel_size: int = 3,
+        dilation_size: int = 3,
+        grouping_proximity: int = 10,
+    ) -> None:
         self.hardware_accelerated = hardware_accelerated
         self.fattened_size_offset = fattened_size_offset
         self.white_threshold = white_threshold
         self.border_blur_size = border_blur_size
+        self.edge_detection_method = edge_detection_method
+        self.canny_threshold = canny_threshold if canny_threshold is not None else [50, 150]
+        self.sobel_kernel_size = sobel_kernel_size
+        self.dilation_size = dilation_size
+        self.grouping_proximity = grouping_proximity
 
     @classmethod
     def from_json(cls, json_source):
@@ -75,10 +92,20 @@ class Config:
         fattened_size_offset = data.get('fattened_size_offset', 0)
         white_threshold = data.get('white_threshold', 200)
         border_blur_size = data.get('border_blur_size', 20)
+        edge_detection_method = data.get('edge_detection_method', 'canny')
+        canny_threshold = data.get('canny_threshold', [50, 150])
+        sobel_kernel_size = data.get('sobel_kernel_size', 3)
+        dilation_size = data.get('dilation_size', 3)
+        grouping_proximity = data.get('grouping_proximity', 10)
 
         return cls(
             hardware_accelerated=hardware_accelerated,
             fattened_size_offset=fattened_size_offset,
             white_threshold=white_threshold,
-            border_blur_size=border_blur_size
+            border_blur_size=border_blur_size,
+            edge_detection_method=edge_detection_method,
+            canny_threshold=canny_threshold,
+            sobel_kernel_size=sobel_kernel_size,
+            dilation_size=dilation_size,
+            grouping_proximity=grouping_proximity,
         )

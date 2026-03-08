@@ -4,10 +4,10 @@ import numpy as np
 import cv2
 
 from .config import Config
-from .blurer import ImageBlur
-from .edge_bounded_object import EdgeDetector, EdgeBoundedObject, EdgeDetectionMethod, CannyData, SobelData
-from .contour_grouper import ContourGrouper
-from .edge_connector import EdgeConnector
+from .processor.blurer import ImageBlur
+from .models.edge_bounded_object import EdgeDetector, EdgeBoundedObject, EdgeDetectionMethod, CannyData, SobelData
+from .processor.contour_grouper import ContourGrouper
+from .processor.edge_connector import EdgeConnector
 
 class Extractor:
     """Extractor class for extracting object from images or videos."""

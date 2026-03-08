@@ -3,8 +3,8 @@
 import numpy as np
 import cv2
 
-from .config import Config
-from .processor.process import Processor
+from ...config import Config
+from ..processor import Processor
 
 
 class EdgeConnector(Processor):

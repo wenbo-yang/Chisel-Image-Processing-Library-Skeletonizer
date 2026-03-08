@@ -6,8 +6,8 @@ import numpy as np
 import cv2
 import cv2.ximgproc
 
-from .config import Config
-from .processor.process import Processor
+from ...config import Config
+from ..processor import Processor
 
 class Thinning(Processor):
     def __init__(self, config: Config) -> None:

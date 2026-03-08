@@ -1,12 +1,12 @@
 """Chisel Image Processing Library"""
 
 from .config import Config
-from .skeletonizer import Thinning
+from .processor.skeletonizer import Thinning
 from .extractor import Extractor
-from .edge_bounded_object import EdgeBoundedObject, EdgeDetector, EdgeDetectionMethod, CannyData, SobelData
-from .blurer import ImageBlur
-from .contour_grouper import ContourGrouper
-from .edge_connector import EdgeConnector
+from .models.edge_bounded_object import EdgeBoundedObject, EdgeDetector, EdgeDetectionMethod, CannyData, SobelData
+from .processor.blurer import ImageBlur
+from .processor.contour_grouper import ContourGrouper
+from .processor.edge_connector import EdgeConnector
 
 __version__ = "0.1.0"
 __author__ = "Your Name"

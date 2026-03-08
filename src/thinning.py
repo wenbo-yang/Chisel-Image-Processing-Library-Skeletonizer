@@ -1,4 +1,4 @@
-"""Zhang-Suen thinning algorithm wrapper for image skeletonization."""
+"""Zhang-Suen thinning (skeletonization) helper."""
 
 from typing import Union, List
 from pathlib import Path
@@ -7,24 +7,27 @@ import cv2
 import cv2.ximgproc
 
 from .config import Config
+from .processor.process import Processor
 
-class Thinning:
+class Thinning(Processor):
     def __init__(self, config: Config) -> None:
         self.config = config
 
-    def skeletonize(self, image_input: Union[np.ndarray, List[bytes], str, Path], is_background_white: bool = True) -> np.ndarray:
-        # Dispatch to appropriate method based on input type
+    def apply(self, image_input: Union[np.ndarray, List[bytes], str, Path], is_background_white: bool = True) -> np.ndarray:
+        """Skeletonize the provided image input and return a binary result."""
+
         if isinstance(image_input, np.ndarray):
             return self._skeletonize_bitmap(image_input, is_background_white)
-        elif isinstance(image_input, list):
+        if isinstance(image_input, list):
             return self._skeletonize_byte_array_2d(image_input, is_background_white)
-        elif isinstance(image_input, (str, Path)):
+        if isinstance(image_input, (str, Path)):
             return self._skeletonize_file(image_input, is_background_white)
-        else:
-            raise TypeError(
-                f"Unsupported image_input type: {type(image_input)}. "
-                "Expected np.ndarray, List[bytes], str, or Path."
-            )
+
+        raise TypeError(f"Unsupported image_input type: {type(image_input)}")
+
+    def skeletonize(self, image_input: Union[np.ndarray, List[bytes], str, Path], is_background_white: bool = True) -> np.ndarray:
+        """Backward-compatible alias for `apply`."""
+        return self.apply(image_input, is_background_white)
 
     def _skeletonize_bitmap(self, bitmap: np.ndarray, is_background_white: bool) -> np.ndarray:
         if not isinstance(bitmap, np.ndarray):

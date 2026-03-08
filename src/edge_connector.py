@@ -1,4 +1,4 @@
-"""Morphological dilation helper for edge gap closure."""
+"""Morphological dilation to connect nearby edge fragments."""
 
 import numpy as np
 import cv2
@@ -7,8 +7,8 @@ from .config import Config
 from .processor.process import Processor
 
 
-class EdgeCloser(Processor):
-    """Close small gaps in edge fragments using dilation."""
+class EdgeConnector(Processor):
+    """Connect nearby edge fragments via elliptical dilation."""
 
     def __init__(self, config: Config) -> None:
         if not isinstance(config, Config):
@@ -16,7 +16,7 @@ class EdgeCloser(Processor):
         self.config = config
 
     def apply(self, edge_region: np.ndarray) -> np.ndarray:
-        """Dilate `edge_region` and return the bridged edge map."""
+        """Dilate `edge_region` to bridge small gaps and return result."""
         dilation_size = self.config.dilation_size
         kernel = cv2.getStructuringElement(
             cv2.MORPH_ELLIPSE, (dilation_size, dilation_size)

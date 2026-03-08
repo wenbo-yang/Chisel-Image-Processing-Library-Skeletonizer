@@ -16,7 +16,7 @@ Extractor (orchestrator)
 ├── ImageBlur          — Stage 2: size-adaptive Gaussian blur
 ├── EdgeDetector       — Stage 3: Canny / Sobel / DEXI edge detection
 ├── ContourGrouper     — Stage 4: contour finding and proximity grouping
-└── EdgeCloser         — Stage 5: dilation-based gap bridging
+└── EdgeConnector      — Stage 5: dilation-based gap bridging
 ```
 
 ---
@@ -117,11 +117,11 @@ Find and group the raw edges from the edge map into logical objects.
 
 ### Stage 5 — Edge Closure (Dilation)
 
-**Class:** `EdgeCloser` — `src/edge_closer.py`
+**Class:** `EdgeConnector` — `src/edge_connector.py`
 
 **Interface:**
 ```python
-class EdgeCloser:
+class EdgeConnector:
     def __init__(self, config: Config) -> None: ...
     def close(self, edge_region: np.ndarray) -> np.ndarray: ...
 ```
@@ -181,13 +181,13 @@ Add the following fields to `Config` in `src/config.py`:
 | `src/image_blur.py`          | New class `ImageBlur` — size-adaptive Gaussian blur                                            |
 | `src/edge_bounded_object.py` | Add `detect()` to `EdgeDetector`; add `DEXI` stub to `EdgeDetectionMethod`                     |
 | `src/contour_grouper.py`     | New class `ContourGrouper` — `cv2.findContours` + proximity-union grouping                     |
-| `src/edge_closer.py`         | New class `EdgeCloser` — morphological dilation to close edge gaps                             |
-| `src/__init__.py`            | Export `Extractor`, `EdgeBoundedObject`, `ImageBlur`, `ContourGrouper`, `EdgeCloser`           |
+| `src/edge_connector.py`      | New class `EdgeConnector` — morphological dilation to close edge gaps                             |
+| `src/__init__.py`            | Export `Extractor`, `EdgeBoundedObject`, `ImageBlur`, `ContourGrouper`, `EdgeConnector`        |
 | `tests/test_extractor.py`    | Tests for all input types and error cases using `object_extraction.png`                        |
 | `tests/test_image_blur.py`   | Unit tests for `ImageBlur.apply()` — adaptive kernel, manual override, output shape            |
 | `tests/test_edge_detector.py`| Unit tests for `EdgeDetector.detect()` — Canny, Sobel, unsupported method error               |
 | `tests/test_contour_grouper.py` | Unit tests for `ContourGrouper.group()` — merging, proximity threshold, empty edge map     |
-| `tests/test_edge_closer.py`  | Unit tests for `EdgeCloser.close()` — gap bridging, dilation size from config                 |
+| `tests/test_edge_connector.py`| Unit tests for `EdgeConnector.close()` — gap bridging, dilation size from config              |
 
 ---
 

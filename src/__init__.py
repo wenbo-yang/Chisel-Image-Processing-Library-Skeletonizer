@@ -6,7 +6,7 @@ from .extractor import Extractor
 from .edge_bounded_object import EdgeBoundedObject, EdgeDetector, EdgeDetectionMethod, CannyData, SobelData
 from .image_blur import ImageBlur
 from .contour_grouper import ContourGrouper
-from .edge_closer import EdgeCloser
+from .edge_connector import EdgeConnector
 
 __version__ = "0.1.0"
 __author__ = "Your Name"
@@ -23,5 +23,5 @@ __all__ = [
     "SobelData",
     "ImageBlur",
     "ContourGrouper",
-    "EdgeCloser",
+    "EdgeConnector",
 ]

@@ -1,4 +1,4 @@
-"""Contour finding and proximity-based grouping of edge fragments."""
+"""Group contours from an edge map by proximity."""
 
 from typing import List
 
@@ -6,37 +6,20 @@ import numpy as np
 import cv2
 
 from .config import Config
+from .processor.process import Processor
 
 
-class ContourGrouper:
-    """Groups raw contours from an edge map into logical objects by proximity.
-
-    Contours whose bounding boxes are within config.grouping_proximity pixels
-    of each other are merged into a single group, each group representing one
-    distinct object in the image.
-
-    TODO: Replace proximity-union with Jaccard Index grouping once the
-    algorithm is decided:
-        jaccard = intersection_area / union_area
-        Merge contours where jaccard >= config.grouping_threshold
-    """
+class ContourGrouper(Processor):
+    """Group nearby contours into logical object groups."""
 
     def __init__(self, config: Config) -> None:
         if not isinstance(config, Config):
             raise TypeError(f"config must be a Config instance, got {type(config)}")
         self.config = config
 
-    def group(self, edge_map: np.ndarray) -> List[List[np.ndarray]]:
-        """Find and group contours from an edge map into logical objects.
+    def apply(self, edge_map: np.ndarray) -> List[List[np.ndarray]]:
+        """Return contour groups found in `edge_map` (empty if none)."""
 
-        Args:
-            edge_map: 2D binary numpy array (output of edge detection).
-
-        Returns:
-            List of groups. Each group is a list of contour arrays (each
-            contour is a numpy array of shape (N, 1, 2)).
-            Returns an empty list if no contours are found.
-        """
         contours, _ = cv2.findContours(
             edge_map, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
         )
@@ -79,3 +62,7 @@ class ContourGrouper:
             groups.append(group)
 
         return groups
+
+    # Backwards-compatible alias
+    def group(self, edge_map: np.ndarray) -> List[List[np.ndarray]]:
+        return self.apply(edge_map)

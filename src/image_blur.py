@@ -11,9 +11,10 @@ import numpy as np
 import cv2
 
 from .config import Config
+from .processor.process import Processor
 
 
-class ImageBlur:
+class ImageBlur(Processor):
     """Applies Gaussian blur to an image before edge detection.
 
     The kernel size scales adaptively with the image dimensions so that
@@ -29,11 +30,11 @@ class ImageBlur:
     def apply(self, image: np.ndarray) -> np.ndarray:
         """Apply Gaussian blur to a 2D greyscale image.
 
-        Kernel size formula (when config.border_blur_size == 0):
-            kernel_size = max(3, min(height, width) // 20) | 1  # forced odd
-
-        If config.border_blur_size > 0, that value is used directly as the
-        kernel size (forced odd via bitwise OR with 1).
+        If `self.config.border_blur_size > 0`, that odd integer is used as the
+        kernel size. Otherwise the kernel is interpolated between
+        `self.config.blur_kernel_min` and `self.config.blur_kernel_max` based on
+        image size relative to `self.config.blur_dim_min` /
+        `self.config.blur_dim_max`. The kernel is always forced odd.
 
         Args:
             image: 2D greyscale numpy array.

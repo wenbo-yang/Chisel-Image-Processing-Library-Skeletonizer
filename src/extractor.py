@@ -7,7 +7,7 @@ from .config import Config
 from .image_blur import ImageBlur
 from .edge_bounded_object import EdgeDetector, EdgeBoundedObject, EdgeDetectionMethod, CannyData, SobelData
 from .contour_grouper import ContourGrouper
-from .edge_closer import EdgeCloser
+from .edge_connector import EdgeConnector
 
 class Extractor:
     """Extractor class for extracting object from images or videos."""
@@ -45,10 +45,10 @@ class Extractor:
         self._last_blurred = blurred
 
         # Stage 3: edge detection
-        edge_map = EdgeDetector(self.config).detect(blurred)
+        edge_map = EdgeDetector(self.config).apply(blurred)
 
         # Stage 4: group contours by proximity
-        groups = ContourGrouper(self.config).group(edge_map)
+        groups = ContourGrouper(self.config).apply(edge_map)
 
         # Compute blur_strength metadata (clamped to EdgeBoundedObject valid range [3, 19])
         if self.config.border_blur_size > 0:
@@ -66,7 +66,7 @@ class Extractor:
             edge_data = SobelData()
 
         # Stage 5 + 6: close edges and build output objects
-        edge_closer = EdgeCloser(self.config)
+        edge_connector = EdgeConnector(self.config)
         results = []
 
         for group in groups:
@@ -75,7 +75,7 @@ class Extractor:
 
             # Close edge gaps within the bounding region
             edge_region = edge_map[y:y + h, x:x + w]
-            edge_closer.close(edge_region)
+            edge_connector.apply(edge_region)
 
             # Crop from the original (pre-blur) image to preserve full detail
             bounded_image = image[y:y + h, x:x + w].copy()

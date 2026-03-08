@@ -15,11 +15,8 @@ from .processor.process import Processor
 
 
 class ImageBlur(Processor):
-    """Applies Gaussian blur to an image before edge detection.
-
-    The kernel size scales adaptively with the image dimensions so that
-    blur strength is proportional regardless of resolution. The computed
-    kernel can be overridden by setting config.border_blur_size > 0.
+    """Applies Gaussian blur to images before edge detection.
+    Kernel size scales with image dimensions, configurable via border_blur_size.
     """
 
     def __init__(self, config: Config) -> None:
@@ -29,18 +26,10 @@ class ImageBlur(Processor):
 
     def apply(self, image: np.ndarray) -> np.ndarray:
         """Apply Gaussian blur to a 2D greyscale image.
-
-        If `self.config.border_blur_size > 0`, that odd integer is used as the
-        kernel size. Otherwise the kernel is interpolated between
-        `self.config.blur_kernel_min` and `self.config.blur_kernel_max` based on
-        image size relative to `self.config.blur_dim_min` /
-        `self.config.blur_dim_max`. The kernel is always forced odd.
-
         Args:
             image: 2D greyscale numpy array.
-
         Returns:
-            np.ndarray: Blurred image of the same shape and dtype.
+            np.ndarray: Blurred image with same shape and dtype.
         """
         # Explicit override if set in config
         if self.config.border_blur_size > 0:

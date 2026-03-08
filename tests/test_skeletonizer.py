@@ -1,15 +1,15 @@
-"""Tests for the Thinning class and skeletonize function."""
+"""Tests for the Thinning class and thin function."""
 
 import pytest
 import numpy as np
 import cv2
 from pathlib import Path
-from src.thinning import Thinning
+from src.skeletonizer import Thinning
 from src.config import Config
 
 
 class TestThinningSkeletonize:
-    # Test suite for the Thinning.skeletonize method.
+    # Test suite for the Thinning.thin method.
 
     @pytest.fixture
     def thinning_instance(self):
@@ -37,7 +37,7 @@ class TestThinningSkeletonize:
         image_path = resources_dir / "silhouette_fat_man_running.png"
 
         # Skeletonize the image
-        result = thinning_instance.skeletonize(str(image_path))
+        result = thinning_instance.thin(str(image_path))
 
         # Assert output is a numpy array
         assert isinstance(result, np.ndarray)
@@ -64,7 +64,7 @@ class TestThinningSkeletonize:
         image_path = resources_dir / "silhouette_man_running.png"
 
         # Skeletonize the image
-        result = thinning_instance.skeletonize(str(image_path))
+        result = thinning_instance.thin(str(image_path))
 
         # Assert output is a numpy array
         assert isinstance(result, np.ndarray)
@@ -99,7 +99,7 @@ class TestThinningSkeletonize:
         byte_array_2d = [bytes(row) for row in image]
 
         # Skeletonize the 2D byte array
-        result = thinning_instance.skeletonize(byte_array_2d)
+        result = thinning_instance.thin(byte_array_2d)
 
         # Assert output is a numpy array
         assert isinstance(result, np.ndarray)
@@ -134,7 +134,7 @@ class TestThinningSkeletonize:
         inverted_image = 255 - image
 
         # Skeletonize the inverted image with is_background_white=False
-        result = thinning_instance.skeletonize(inverted_image, is_background_white=False)
+        result = thinning_instance.thin(inverted_image, is_background_white=False)
 
         # Assert output is a numpy array
         assert isinstance(result, np.ndarray)
@@ -166,7 +166,7 @@ class TestThinningSkeletonize:
         image_path = resources_dir / "silhouette_man_running.png"
 
         # Skeletonize the image with fattening
-        result = thinning_fattened.skeletonize(str(image_path))
+        result = thinning_fattened.thin(str(image_path))
 
         # Assert output is a numpy array
         assert isinstance(result, np.ndarray)

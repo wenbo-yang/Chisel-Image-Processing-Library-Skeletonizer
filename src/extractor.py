@@ -4,7 +4,7 @@ import numpy as np
 import cv2
 
 from .config import Config
-from .image_blur import ImageBlur
+from .blurer import ImageBlur
 from .edge_bounded_object import EdgeDetector, EdgeBoundedObject, EdgeDetectionMethod, CannyData, SobelData
 from .contour_grouper import ContourGrouper
 from .edge_connector import EdgeConnector

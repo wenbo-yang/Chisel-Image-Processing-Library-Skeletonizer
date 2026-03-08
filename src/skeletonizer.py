@@ -14,22 +14,22 @@ class Thinning(Processor):
         self.config = config
 
     def apply(self, image_input: Union[np.ndarray, List[bytes], str, Path], is_background_white: bool = True) -> np.ndarray:
-        """Skeletonize the provided image input and return a binary result."""
+        """Apply Zhang-Suen thinning to image input in various formats."""
 
         if isinstance(image_input, np.ndarray):
-            return self._skeletonize_bitmap(image_input, is_background_white)
+            return self._thin_bitmap(image_input, is_background_white)
         if isinstance(image_input, list):
-            return self._skeletonize_byte_array_2d(image_input, is_background_white)
+            return self._thin_byte_array_2d(image_input, is_background_white)
         if isinstance(image_input, (str, Path)):
-            return self._skeletonize_file(image_input, is_background_white)
+            return self._thin_file(image_input, is_background_white)
 
         raise TypeError(f"Unsupported image_input type: {type(image_input)}")
 
-    def skeletonize(self, image_input: Union[np.ndarray, List[bytes], str, Path], is_background_white: bool = True) -> np.ndarray:
-        """Backward-compatible alias for `apply`."""
+    def thin(self, image_input: Union[np.ndarray, List[bytes], str, Path], is_background_white: bool = True) -> np.ndarray:
+        """Alias for apply()."""
         return self.apply(image_input, is_background_white)
 
-    def _skeletonize_bitmap(self, bitmap: np.ndarray, is_background_white: bool) -> np.ndarray:
+    def _thin_bitmap(self, bitmap: np.ndarray, is_background_white: bool) -> np.ndarray:
         if not isinstance(bitmap, np.ndarray):
             raise ValueError("Bitmap must be a numpy ndarray")
 
@@ -95,7 +95,7 @@ class Thinning(Processor):
 
         return blurred
 
-    def _skeletonize_png_bytes(self, png_bytes: bytes, is_background_white: bool) -> np.ndarray:
+    def _thin_png_bytes(self, png_bytes: bytes, is_background_white: bool) -> np.ndarray:
 
         # Decode the PNG byte array to an image
         nparr = np.frombuffer(png_bytes, np.uint8)
@@ -108,9 +108,9 @@ class Thinning(Processor):
             )
 
         # Use bitmap skeletonization on the decoded image
-        return self._skeletonize_bitmap(image, is_background_white)
+        return self._thin_bitmap(image, is_background_white)
 
-    def _skeletonize_byte_array_2d(self, byte_array_2d: List[bytes], is_background_white: bool) -> np.ndarray:
+    def _thin_byte_array_2d(self, byte_array_2d: List[bytes], is_background_white: bool) -> np.ndarray:
         if not isinstance(byte_array_2d, list):
             raise ValueError("Input must be a list of bytes objects")
 
@@ -133,26 +133,10 @@ class Thinning(Processor):
             raise ValueError("Converted image array is empty")
 
         # Use bitmap skeletonization on the converted image
-        return self._skeletonize_bitmap(image_array, is_background_white)
+        return self._thin_bitmap(image_array, is_background_white)
 
-    def _skeletonize_file(self, file_path: Union[str, Path], is_background_white: bool) -> np.ndarray:
-        """Skeletonize an image from a file.
-
-        Automatically detects the file type based on extension and reads
-        the file accordingly. Supports common image formats (PNG, JPG, BMP, etc.).
-
-        Args:
-            file_path: Path to the image file (str or Path object)
-            is_background_white: If True, inverts the image to convert white background to black
-
-        Returns:
-            np.ndarray: Skeletonized binary image
-
-        Raises:
-            FileNotFoundError: If the file doesn't exist
-            ValueError: If the file cannot be read as a valid image
-            ValueError: If the file type is not supported
-        """
+    def _thin_file(self, file_path: Union[str, Path], is_background_white: bool) -> np.ndarray:
+        """Thin an image from a file. Supports PNG, JPG, BMP, TIFF, GIF formats."""
         file_path = Path(file_path)
 
         if not file_path.exists():
@@ -180,4 +164,4 @@ class Thinning(Processor):
             )
 
         # Use bitmap skeletonization on the loaded image
-        return self._skeletonize_bitmap(image, is_background_white)
+        return self._thin_bitmap(image, is_background_white)

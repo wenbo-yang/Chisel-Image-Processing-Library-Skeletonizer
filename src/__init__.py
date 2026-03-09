@@ -3,7 +3,8 @@
 from .config import Config
 from .processor.skeletonizer import Thinning
 from .extractor import Extractor
-from .models.edge_bounded_object import EdgeBoundedObject, EdgeDetector, EdgeDetectionMethod, CannyData, SobelData
+from .models.edge_bounded_object import EdgeBoundedObject, EdgeDetectionMethod, CannyData, SobelData
+from .processor.edge_detector import EdgeDetector
 from .processor.blurer import ImageBlur
 from .processor.contour_grouper import ContourGrouper
 from .processor.edge_connector import EdgeConnector

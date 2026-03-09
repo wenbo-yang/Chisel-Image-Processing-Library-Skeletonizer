@@ -5,7 +5,8 @@ import cv2
 
 from .config import Config
 from .processor.blurer import ImageBlur
-from .models.edge_bounded_object import EdgeDetector, EdgeBoundedObject, EdgeDetectionMethod, CannyData, SobelData
+from .models.edge_bounded_object import EdgeBoundedObject, EdgeDetectionMethod, CannyData, SobelData
+from .processor.edge_detector import EdgeDetector
 from .processor.contour_grouper import ContourGrouper
 from .processor.edge_connector import EdgeConnector
 

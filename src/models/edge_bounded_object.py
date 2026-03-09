@@ -1,14 +1,12 @@
 """Edge detection helpers and data classes."""
 
 from typing import Union, List
-from pathlib import Path
 from dataclasses import dataclass
 from enum import Enum
 import numpy as np
-import cv2
 
 from ..config import Config
-from ..processor.process import Processor
+from ..processor.edge_detector import EdgeDetector
 
 
 class EdgeDetectionMethod(Enum):
@@ -17,27 +15,28 @@ class EdgeDetectionMethod(Enum):
     SOBEL = "sobel"
     DEXI = "dexi"  # future — placeholder stub
 
+
 @dataclass
 class CannyData:
-    """Data class for Canny edge detection parameters."""
-    line_threshold: List[int]  # Array of 2 numbers [min, max]
+    """Canny edge detection parameters."""
+    line_threshold: List[int]
+
 
 @dataclass
 class SobelData:
-    """Data class for Sobel edge detection parameters."""
+    """Sobel edge detection parameters (placeholder)."""
     pass
 
 @dataclass
 class EdgeBoundedObject:
-    """Data class for edge bounded object parameters."""
+    """Container for an extracted object bounded by edges."""
     edge_detection_method: EdgeDetectionMethod
-    blur_strength: List[int]  # Array of 2 numbers [min, max], range 3-20
+    blur_strength: List[int]
     edge_data_description: Union[CannyData, SobelData]
-    coordinates: List[tuple]  # List of (x, y) coordinates in the original image
-    bounded_image: np.ndarray  # Bounded image extracted from coordinates
+    coordinates: List[tuple]
+    bounded_image: np.ndarray
 
     def __post_init__(self):
-        """Validate blur_strength is within acceptable range."""
         if len(self.blur_strength) != 2:
             raise ValueError("blur_strength must be an array of 2 numbers")
         if self.blur_strength[0] < 3 or self.blur_strength[1] > 20:
@@ -45,42 +44,3 @@ class EdgeBoundedObject:
         if self.blur_strength[0] > self.blur_strength[1]:
             raise ValueError("blur_strength min must be <= max")
 
-
-class EdgeDetector:
-    """EdgeDetector class for detecting edges in images."""
-
-    def __init__(self, config: Config) -> None:
-        if not isinstance(config, Config):
-            raise TypeError(f"config must be a Config instance, got {type(config)}")
-        self.config = config
-
-class EdgeDetector(Processor):
-    """Detect edges using the configured method (Canny or Sobel)."""
-
-    def apply(self, image: np.ndarray) -> np.ndarray:
-        """Return an edge map for `image` based on `config` settings."""
-
-        method = self.config.edge_detection_method
-
-        if method == EdgeDetectionMethod.CANNY.value:
-            low, high = self.config.canny_threshold
-            return cv2.Canny(image, low, high)
-
-        if method == EdgeDetectionMethod.SOBEL.value:
-            ksize = self.config.sobel_kernel_size
-            sobel_x = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=ksize)
-            sobel_y = cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=ksize)
-            magnitude = np.sqrt(sobel_x ** 2 + sobel_y ** 2)
-            return np.clip(magnitude, 0, 255).astype(np.uint8)
-
-        if method == EdgeDetectionMethod.DEXI.value:
-            raise NotImplementedError("DEXI edge detection is not yet implemented")
-
-        raise ValueError(
-            f"Unsupported edge detection method: '{method}'. "
-            f"Expected one of: {[m.value for m in EdgeDetectionMethod]}"
-        )
-
-    def detect(self, image: np.ndarray) -> np.ndarray:
-        """Backward-compatible alias for `apply`."""
-        return self.apply(image)

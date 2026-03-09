@@ -36,8 +36,12 @@ class TestThinningSkeletonize:
         # Saves the output bitmap to the temp folder.
         image_path = resources_dir / "silhouette_fat_man_running.png"
 
+        # Load image as numpy array
+        image = cv2.imread(str(image_path), cv2.IMREAD_GRAYSCALE)
+        assert image is not None, "Failed to read image file"
+
         # Skeletonize the image
-        result = thinning_instance.thin(str(image_path))
+        result = thinning_instance.thin(image)
 
         # Assert output is a numpy array
         assert isinstance(result, np.ndarray)
@@ -63,8 +67,12 @@ class TestThinningSkeletonize:
         # Saves the output bitmap to the temp folder.
         image_path = resources_dir / "silhouette_man_running.png"
 
+        # Load image as numpy array
+        image = cv2.imread(str(image_path), cv2.IMREAD_GRAYSCALE)
+        assert image is not None, "Failed to read image file"
+
         # Skeletonize the image
-        result = thinning_instance.thin(str(image_path))
+        result = thinning_instance.thin(image)
 
         # Assert output is a numpy array
         assert isinstance(result, np.ndarray)
@@ -85,9 +93,8 @@ class TestThinningSkeletonize:
 
     def test_skeletonize_2d_byte_array_colors(self, thinning_instance, resources_dir, temp_dir):
         # Test skeletonization using 2D byte array with inverted colors.
-        # Reads silhouette_man_running.png, converts it to a 2D byte array with
-        # 0 representing white and 255 representing black, then feeds it into
-        # the skeletonize function. Asserts that the output is not all white.
+        # Reads silhouette_man_running.png, converts it to a numpy array,
+        # then feeds it into the skeletonize function. Asserts that the output is not all white.
         # Saves the output bitmap to the temp folder.
         image_path = resources_dir / "silhouette_man_running.png"
 
@@ -95,11 +102,8 @@ class TestThinningSkeletonize:
         image = cv2.imread(str(image_path), cv2.IMREAD_GRAYSCALE)
         assert image is not None, "Failed to read image file"
 
-        # Convert 2D array to 2D byte array (list of byte arrays)
-        byte_array_2d = [bytes(row) for row in image]
-
-        # Skeletonize the 2D byte array
-        result = thinning_instance.thin(byte_array_2d)
+        # Skeletonize the numpy array
+        result = thinning_instance.thin(image)
 
         # Assert output is a numpy array
         assert isinstance(result, np.ndarray)
@@ -121,8 +125,8 @@ class TestThinningSkeletonize:
     def test_skeletonize_inverted_colors(self, thinning_instance, resources_dir, temp_dir):
         # Test skeletonization with inverted image colors.
         # Reads silhouette_man_running.png, inverts the colors (white background becomes black),
-        # then skeletonizes with is_background_white=False. Asserts that the output
-        # is not all white.
+        # then skeletonizes. Background color is auto-detected from (0,0).
+        # Asserts that the output is not all white.
         # Saves the output bitmap to the temp folder.
         image_path = resources_dir / "silhouette_man_running.png"
 
@@ -133,8 +137,8 @@ class TestThinningSkeletonize:
         # Invert the colors (white background becomes black, black silhouette becomes white)
         inverted_image = 255 - image
 
-        # Skeletonize the inverted image with is_background_white=False
-        result = thinning_instance.thin(inverted_image, is_background_white=False)
+        # Skeletonize the inverted image (background color auto-detected from (0,0))
+        result = thinning_instance.thin(inverted_image)
 
         # Assert output is a numpy array
         assert isinstance(result, np.ndarray)
@@ -165,8 +169,12 @@ class TestThinningSkeletonize:
 
         image_path = resources_dir / "silhouette_man_running.png"
 
+        # Load image as numpy array
+        image = cv2.imread(str(image_path), cv2.IMREAD_GRAYSCALE)
+        assert image is not None, "Failed to read image file"
+
         # Skeletonize the image with fattening
-        result = thinning_fattened.thin(str(image_path))
+        result = thinning_fattened.thin(image)
 
         # Assert output is a numpy array
         assert isinstance(result, np.ndarray)

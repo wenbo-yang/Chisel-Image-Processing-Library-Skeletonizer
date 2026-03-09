@@ -5,8 +5,8 @@ from typing import Union, List
 import numpy as np
 import cv2
 
-from ..config import Config
-from .processor import Processor
+from ...config import Config
+from ..processor import Processor
 # Avoid importing model datatypes here to prevent circular imports; use
 # simple string values from config for method selection.
 

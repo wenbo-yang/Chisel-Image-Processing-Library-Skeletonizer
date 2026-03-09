@@ -1,7 +1,5 @@
 """Zhang-Suen thinning (skeletonization) helper."""
 
-from typing import Union, List
-from pathlib import Path
 import numpy as np
 import cv2
 import cv2.ximgproc
@@ -13,33 +11,29 @@ class Thinning(Processor):
     def __init__(self, config: Config) -> None:
         self.config = config
 
-    def apply(self, image_input: Union[np.ndarray, List[bytes], str, Path], is_background_white: bool = True) -> np.ndarray:
-        """Apply Zhang-Suen thinning to image input in various formats."""
+    def apply(self, image: np.ndarray) -> np.ndarray:
+        """Apply Zhang-Suen thinning to a 2D grayscale image array.
+        
+        Background color is automatically determined from pixel at (0,0).
+        If pixel value > 127, background is white; otherwise, background is black.
+        """
+        if not isinstance(image, np.ndarray):
+            raise TypeError(f"image must be np.ndarray, got {type(image)}")
+        if image.ndim != 2:
+            raise ValueError(f"image must be 2D, got {image.ndim}D array")
+        if image.size == 0:
+            raise ValueError("image cannot be empty")
+        
+        # Determine background color from corner pixel (0,0)
+        is_background_white = image[0, 0] > 127
+        
+        return self._thin_bitmap(image, is_background_white)
 
-        if isinstance(image_input, np.ndarray):
-            return self._thin_bitmap(image_input, is_background_white)
-        if isinstance(image_input, list):
-            return self._thin_byte_array_2d(image_input, is_background_white)
-        if isinstance(image_input, (str, Path)):
-            return self._thin_file(image_input, is_background_white)
-
-        raise TypeError(f"Unsupported image_input type: {type(image_input)}")
-
-    def thin(self, image_input: Union[np.ndarray, List[bytes], str, Path], is_background_white: bool = True) -> np.ndarray:
+    def thin(self, image: np.ndarray) -> np.ndarray:
         """Alias for apply()."""
-        return self.apply(image_input, is_background_white)
+        return self.apply(image)
 
     def _thin_bitmap(self, bitmap: np.ndarray, is_background_white: bool) -> np.ndarray:
-        if not isinstance(bitmap, np.ndarray):
-            raise ValueError("Bitmap must be a numpy ndarray")
-
-        if bitmap.ndim != 2:
-            raise ValueError(
-                f"Bitmap must be 2D, got {bitmap.ndim}D array"
-            )
-
-        if bitmap.size == 0:
-            raise ValueError("Bitmap cannot be empty")
 
         # If background is white, invert the image to black background
         image_to_process = bitmap
@@ -94,74 +88,3 @@ class Thinning(Processor):
         blurred = cv2.GaussianBlur(image, (border_size | 1, border_size | 1), 0)
 
         return blurred
-
-    def _thin_png_bytes(self, png_bytes: bytes, is_background_white: bool) -> np.ndarray:
-
-        # Decode the PNG byte array to an image
-        nparr = np.frombuffer(png_bytes, np.uint8)
-        image = cv2.imdecode(nparr, cv2.IMREAD_GRAYSCALE)
-
-        if image is None:
-            raise ValueError(
-                "Failed to decode byte array as PNG image. "
-                "Ensure it's a valid encoded PNG format."
-            )
-
-        # Use bitmap skeletonization on the decoded image
-        return self._thin_bitmap(image, is_background_white)
-
-    def _thin_byte_array_2d(self, byte_array_2d: List[bytes], is_background_white: bool) -> np.ndarray:
-        if not isinstance(byte_array_2d, list):
-            raise ValueError("Input must be a list of bytes objects")
-
-        if len(byte_array_2d) == 0:
-            raise ValueError("Byte array list cannot be empty")
-
-        # Convert list of byte arrays to numpy array
-        try:
-            image_array = np.array(
-                [np.frombuffer(row, dtype=np.uint8) for row in byte_array_2d],
-                dtype=np.uint8
-            )
-        except (TypeError, ValueError) as e:
-            raise ValueError(
-                f"Failed to convert 2D byte array to image. "
-                f"Ensure each element is a bytes object: {e}"
-            )
-
-        if image_array.size == 0:
-            raise ValueError("Converted image array is empty")
-
-        # Use bitmap skeletonization on the converted image
-        return self._thin_bitmap(image_array, is_background_white)
-
-    def _thin_file(self, file_path: Union[str, Path], is_background_white: bool) -> np.ndarray:
-        """Thin an image from a file. Supports PNG, JPG, BMP, TIFF, GIF formats."""
-        file_path = Path(file_path)
-
-        if not file_path.exists():
-            raise FileNotFoundError(f"Image file not found: {file_path}")
-
-        # Get file extension
-        file_ext = file_path.suffix.lower()
-
-        # Supported image formats
-        supported_formats = {'.png', '.jpg', '.jpeg', '.bmp', '.tiff', '.tif', '.gif'}
-
-        if file_ext not in supported_formats:
-            raise ValueError(
-                f"Unsupported file type: {file_ext}. "
-                f"Supported formats: {', '.join(supported_formats)}"
-            )
-
-        # Read the image in grayscale
-        image = cv2.imread(str(file_path), cv2.IMREAD_GRAYSCALE)
-
-        if image is None:
-            raise ValueError(
-                f"Failed to read image file: {file_path}. "
-                f"Ensure it's a valid {file_ext} image format."
-            )
-
-        # Use bitmap skeletonization on the loaded image
-        return self._thin_bitmap(image, is_background_white)
